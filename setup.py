@@ -4,11 +4,11 @@ import sys
 from setuptools import setup, find_packages
 
 
-__copyright__ = 'Copyright (C) 2019, Nokia'
+__copyright__ = 'Copyright (C) 2020, Nokia'
 
 VERSIONFILE = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
-    'src', 'crl', 'interactivesessions', '_version.py')
+    'src', 'stagecrew', '_version.py')
 
 
 def import_module(name, path):
@@ -37,12 +37,8 @@ setup(
     version=get_version(),
     author='Petri Huovinen',
     author_email='petri.huovinen@nokia.com',
-    description='Robot Framework test library collection on top of pexpect',
-    install_requires=['pexpect>=4.0',
-                      'six',
-                      'paramiko',
-                      'ipaddress',
-                      'monotonic'],
+    description='Actor system library for testing',
+    install_requires=['six'],
     long_description=read('README.rst'),
     license='BSD-3-Clause',
     classifiers=['Intended Audience :: Developers',
@@ -53,11 +49,8 @@ setup(
                  'Programming Language :: Python :: 3.6',
                  'Programming Language :: Python :: 3.7',
                  'Topic :: Software Development'],
-    keywords='robotframework',
-    url='https://github.com/nokia/crl-interactivesessions',
+    keywords='actor testing',
+    url='https://github.com/nokia/stagecrew',
     packages=find_packages('src'),
     package_dir={'': 'src'},
-    namespace_packages=['crl'],
-    entry_points={'robotdocsconf': [
-        'robotdocsconf = crl.interactivesessions.robotdocsconf:robotdocs']}
 )
