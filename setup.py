@@ -33,7 +33,7 @@ def read(fname):
 
 
 setup(
-    name='crl.interactivesessions',
+    name='stagecrew',
     version=get_version(),
     author='Petri Huovinen',
     author_email='petri.huovinen@nokia.com',
