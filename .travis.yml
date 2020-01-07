@@ -11,10 +11,7 @@ matrix:
       env: TOXENV=py36
     - name: py37-pylint37-docs-doctest
       python: 3.7
-      env: TOXENV=py37,pylint37,docs,doctest
-    - name: docker-robottests
-      python: 3.7
-      env: TOXENV=docker-robottests
+      env: TOXENV=py37,pylint37
 install:
   - pip install tox
 script: tox

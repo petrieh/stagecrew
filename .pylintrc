@@ -65,13 +65,7 @@ confidence=
 # --enable=similarities". If you want to run only the classes checker, but have
 # no Warning level messages displayed, use"--disable=all --enable=classes
 # --disable=W"
-disable=missing-docstring,anomalous-backslash-in-string,
-    relative-import,redefined-outer-name,redefined-builtin,eval-used,
-    exec-used,wildcard-import,
-    inconsistent-return-statements,fixme,no-name-in-module,abstract-method,
-    useless-object-inheritance,no-else-break,unnecessary-comprehension,
-    invalid-overridden-method
-
+disable=missing-docstring,useless-object-inheritance
 [REPORTS]
 
 # Set the output format. Available formats are text, parseable, colorized, msvs
