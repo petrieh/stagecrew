@@ -1,21 +1,19 @@
-.. Copyright (C) 2019, Nokia
+.. Copyright (C) 2020, Nokia
 
-Documentation of crl.interactivesessions
-========================================
+Stagecrew |release|
+===================
 
-The *crl.interactivesessions* provide *Python* extendable wrappers on top
-of the pseudo terminal libraries. Currently, only *pexpect* is supported.
-
+Stagecrew is Python `actor model` library for testing. The library contains
+also test support for actor system implementations.
 .. toctree::
    :maxdepth: 2
 
-   interactivesession
-   remoteproxies
+   importer
+   transport
+   concurrency
+   actors
    examples
-   robotdocs
    Readme <README>
-   Stability Tests <stability>
-   Development Plan <plan_index>
    Change History <CHANGES>
 
 Indices and tables
