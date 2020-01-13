@@ -3,7 +3,7 @@
 CHANGES
 =======
 
-0.0.1dev1
----------
+0.0.1
+-----
 
-- Development version with frame but without content
+- First version

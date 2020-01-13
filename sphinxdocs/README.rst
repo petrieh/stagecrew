@@ -1,3 +1,3 @@
-.. Copyright (C) 2019, Nokia
+.. Copyright (C) 2020, Nokia
 
 .. include:: ../README.rst
