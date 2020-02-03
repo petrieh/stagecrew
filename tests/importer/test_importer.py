@@ -1,10 +1,14 @@
+# pylint: disable=redefined-outer-name
 from multiprocessing import (
     Process,
     Queue)
 
 import pytest
+from stagecrew.importer import create_eval_archive
+from .examples.c import c_func
 
-from stagecrew.importer import import_object
+
+__copyright__ = 'Copyright (C) 2020, Nokia'
 
 
 class Worker(Process):
@@ -37,5 +41,16 @@ def worker():
             p.kill()
 
 
-def test_importer():
-    c = import_object(c)
+class Task(metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def run(self):
+        """Run task.
+        """
+
+class EvalArchiveImportTask:
+    assert 0
+
+
+def test_importer(worker):
+    a = create_eval_archive(c_func)
+    worker.run_eval_archive_
