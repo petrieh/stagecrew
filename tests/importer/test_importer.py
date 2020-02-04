@@ -4,27 +4,30 @@ from multiprocessing import (
     Queue)
 
 import pytest
-from stagecrew.importer import create_eval_archive
-from .examples.c import c_func
-
+from stagecrew import Importer
 
 __copyright__ = 'Copyright (C) 2020, Nokia'
 
 
 class Worker(Process):
     def __init__(self):
-        self._queue = Queue()
+        self._task_queue = Queue()
+        self._response_queue = Queue()
 
     @property
-    def queue(self):
-        return self._queue
+    def task_queue(self):
+        return self._task_queue
+
+    @property
+    def response_queue(self):
+        return self._response_queue
 
     def run(self):
         while True:
-            task = self._queue.get()
+            task = self._task_queue.get()
             if not task:
                 break
-            task.run()
+            self.response_queue.put(task.run())
 
 
 @pytest.fixture(scope='module')
@@ -47,10 +50,18 @@ class Task(metaclass=abc.ABCMeta):
         """Run task.
         """
 
-class EvalArchiveImportTask:
+class EvalLoadsTask:
     assert 0
 
 
 def test_importer(worker):
-    a = create_eval_archive(c_func)
-    worker.run_eval_archive_
+    from .examples.a import A
+    i = Importer()
+    e = EvalLoadsTask(i.eval_dumps(A))
+    worker.task_queue.put(e)
+    response = worker.response_queue.get()
+    assert
+
+
+
+
