@@ -1,7 +1,12 @@
 import abc
+import six
 
 
-class Task(metaclass=abc.ABCMeta):
+__copyright__ = 'Copyright (C) 2020, Nokia'
+
+
+@six.add_metaclass(abc.ABCMeta)
+class Task(object):
     @abc.abstractmethod
     def run(self):
         """Run task.

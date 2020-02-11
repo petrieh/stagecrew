@@ -1,13 +1,13 @@
 __copyright__ = 'Copyright (C) 2020, Nokia'
 
 
-class A(object):
+class AExample(object):
     def __init__(self, a):
-        self.a = a
+        self._a = a
 
-    def __str__(self):
-        return str(a)
+    def __eq__(self, other):
+        return self._a == other._a
 
 
-def a(arg):
-    return arg
+def a_func(arg):
+    return AExample(arg)

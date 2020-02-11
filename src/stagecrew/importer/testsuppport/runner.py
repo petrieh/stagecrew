@@ -3,6 +3,9 @@ from multiprocessing import (
     Queue)
 
 
+__copyright__ = 'Copyright (C) 2020, Nokia'
+
+
 class Runner(Process):
     def __init__(self):
         super(Runner, self).__init__()

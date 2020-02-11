@@ -1,17 +1,20 @@
 from .a import (
-    A,
-    a)
+    AExample,
+    a_func)
 
 __copyright__ = 'Copyright (C) 2020, Nokia'
 
-IMPORTS = [A, a]
+__deps__ = ['AExample', a_func]
 
 
-class B(A):
+class BExample(AExample):
     def __init__(self, a, b):
-        super(B, self).__init__(a)
-        self.b = b
+        super(BExample, self).__init__(a)
+        self._b = b
+
+    def __eq__(self, other):
+        return super(BExample, self).__eq__(other) and self._b == other._b
 
 
-def b(arg):
-    return 'b: {}'.format(a(arg))
+def b_func(arg):
+    return BExample(arg, arg)
