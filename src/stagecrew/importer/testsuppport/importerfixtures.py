@@ -43,7 +43,7 @@ class Package(object):
     def __init__(self, source_path, tmpdir):
         self._source_path = source_path
         self._tmpdir = tmpdir
-        self._name = ''.join(random.sample(string.ascii_letters, 10))
+        self._name = ''.join(random.choice(string.ascii_letters) for _ in range(10))
         self._initialize()
 
     def _initialize(self):
