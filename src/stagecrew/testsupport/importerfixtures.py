@@ -4,11 +4,15 @@ import string
 import shutil
 import pytest
 
-from .runner import Runner
-from .verifier import EndToEndVerifier
+from .importer.runner import Runner
+from .importer.verifier import EndToEndVerifier
+
+
+__copyright__ = 'Copyright (C) 2020, Nokia'
+
 
 THISDIR = os.path.dirname(__file__)
-EXAMPLE_PACKAGE_DIR = os.path.join(THISDIR, 'examples')
+EXAMPLE_PACKAGE_DIR = os.path.join(THISDIR, 'importer', 'examples')
 
 
 @pytest.fixture(params=[EndToEndVerifier])

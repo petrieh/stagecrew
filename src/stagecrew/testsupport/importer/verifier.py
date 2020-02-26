@@ -5,12 +5,14 @@ import six
 
 __copyright__ = 'Copyright (C) 2020, Nokia'
 
+
 class ModuleDump(namedtuple('ModuleDump', ['module', 'dumps'])):
     pass
 
 
 class Function(namedtuple('Function', ['moduledump', 'function'])):
     pass
+
 
 @six.add_metaclass(abc.ABCMeta)
 class ImporterVerifierBase(object):
@@ -54,4 +56,4 @@ class EndToEndVerifier(ImporterVerifierBase):
             attr='{module}_func'.format(module=module))
 
     def _eval_load(self, dumps):
-        ssert 0
+        assert 0
