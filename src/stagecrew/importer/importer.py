@@ -7,4 +7,4 @@ class Importer(object):
 
     def loads(self, archive):
         assert 0
-
+        return lambda *args, **kwargs: 'not implemented'

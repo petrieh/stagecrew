@@ -5,5 +5,5 @@ __deps__ = [Importer]
 
 
 def import_and_call(dumps, *args, **kwargs):
-    c = Importer.loads(dumps)
+    c = Importer().loads(dumps)
     return c(*args, **kwargs)
