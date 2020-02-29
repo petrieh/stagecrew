@@ -6,11 +6,7 @@ import six
 __copyright__ = 'Copyright (C) 2020, Nokia'
 
 
-class ModuleDump(namedtuple('ModuleDump', ['module', 'dumps'])):
-    pass
-
-
-class Function(namedtuple('Function', ['moduledump', 'function'])):
+class Function(namedtuple('Function', ['module', 'function'])):
     pass
 
 
@@ -35,19 +31,18 @@ class ImporterVerifierBase(object):
 
 class EndToEndVerifier(ImporterVerifierBase):
     def verify(self, importer):
-        for f in self._functions(importer):
-            import_info = f.dump(f.function)
-            self._eval_load(import_info.dump)
-            importer.import_from_object(func)
+        import_and_call = self._get_object_for_module_attr('manager', 'import_and_call')
+        incr_importer = importer.eval_dumps(import_and_call)
+        self._remote_eval_execute(incr_importer)
+        for f in self._functions():
+            incr_importer.dumps(f.function)
+            importer.import_from_object(f.function)
             arg = 'arg'
-            assert self._execute(func, arg) == func(arg)
+            assert self._remote_execute(incr_importer, arg) == f.function(arg)
 
-    def _functions(self, importer):
-        m = 'a'
-        yield Function(moduledump=ModuleDump(m, importer.eval_dumps),
-                       function=self._get_function(m))
-        for m in ['b', 'c']:
-            yield Function(moduledump=ModuleDump(m, importer.dumps),
+    def _functions(self):
+        for m in ['a', 'b', 'c']:
+            yield Function(module=m,
                            function=self._get_function(m))
 
     def _get_function(self, module):
@@ -55,5 +50,8 @@ class EndToEndVerifier(ImporterVerifierBase):
             module=module,
             attr='{module}_func'.format(module=module))
 
-    def _eval_load(self, dumps):
+    def _remote_eval_execute(self, incr_importer):
+        assert 0
+
+    def _remote_execute(self, incr_importer, arg):
         assert 0
