@@ -27,15 +27,15 @@ def importer_verify(request, package, runner):
 @pytest.fixture(name='runner')
 def fixture_runner():
     try:
-        p = Runner()
-        p.start()
-        yield p
+        r = Runner()
+        r.start()
+        yield r
     finally:
-        p.task_queue.put('')
+        r.task_queue.put('')
         try:
-            p.close()
+            r.close()
         except ValueError:
-            p.kill()
+            r.kill()
 
 
 @pytest.fixture(name='package', params=[EXAMPLE_PACKAGE_DIR])

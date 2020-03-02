@@ -2,6 +2,10 @@ import abc
 from collections import namedtuple
 import six
 
+from .task import (
+    RemoteEvalExecute,
+    RemoteExecute)
+
 
 __copyright__ = 'Copyright (C) 2020, Nokia'
 
@@ -28,17 +32,21 @@ class ImporterVerifierBase(object):
             m = getattr(p, module)
             return getattr(m, attr)
 
+    def _run_remote_task(self, task):
+        self._runner.task_queue.put(task)
+        return self._runner.response_queue.get()
+
 
 class EndToEndVerifier(ImporterVerifierBase):
     def verify(self, importer):
         import_and_call = self._get_object_for_module_attr('manager', 'import_and_call')
-        incr_importer = importer.eval_dumps(import_and_call)
-        self._remote_eval_execute(incr_importer)
+        importer.eval_dumps(import_and_call)
+        self._remote_eval_execute(importer)
         for f in self._functions():
-            incr_importer.dumps(f.function)
+            importer.dumps(f.function)
             importer.import_from_object(f.function)
             arg = 'arg'
-            assert self._remote_execute(incr_importer, arg) == f.function(arg)
+            assert self._remote_execute(importer, arg) == f.function(arg)
 
     def _functions(self):
         for m in ['a', 'b', 'c']:
@@ -50,8 +58,8 @@ class EndToEndVerifier(ImporterVerifierBase):
             module=module,
             attr='{module}_func'.format(module=module))
 
-    def _remote_eval_execute(self, incr_importer):
-        assert 0
+    def _remote_eval_execute(self, importer):
+        return self._run_remote_task(RemoteEvalExecute(importer.eval_dumps))
 
-    def _remote_execute(self, incr_importer, arg):
-        assert 0
+    def _remote_execute(self, importer, arg):
+        return self._run_remote_task(RemoteExecute(importer.dumps, arg))
