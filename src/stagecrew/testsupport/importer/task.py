@@ -13,12 +13,17 @@ class Task(object):
         """
 
 
-class EvalLoadsTask(Task):
+class RemoteEvalExecute(Task):
+    def __init__(self, eval_dumps):
+        self._eval_dumps = eval_dumps
+        self._import_and_call = None
+
     def run(self):
-        assert 0
+        # pylint: disable=eval-used
+        self._import_and_call = eval(self._eval_dumps)
 
 
-class ExecuteTask(Task):
+class RemoteExecuteTask(Task):
     def __init__(self, func, *args):
         self._func = func
         self._args = args
