@@ -2,9 +2,12 @@ __copyright__ = 'Copyright (C) 2020, Nokia'
 
 
 class Importer(object):
-    def eval_dumps(self, obj):
+
+    def import_from_object(self, obj):
         assert 0
 
-    def loads(self, archive):
+    def create_eval_package(self, obj):
         assert 0
-        return lambda *args, **kwargs: 'not implemented'
+
+    def exstract_package(self, package):
+        assert 0

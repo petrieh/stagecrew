@@ -7,36 +7,42 @@ __copyright__ = 'Copyright (C) 2020, Nokia'
 
 @six.add_metaclass(abc.ABCMeta)
 class Task(object):
-    def __init__(self):
-        self._state = {}
+    def __init__(self, importer, function):
+        self._importer = importer
+        self._function = function
+        self._package = self._create_package()
+
+    @property
+    def function(self):
+        return self._function.function
 
     @abc.abstractmethod
     def run(self):
         """Run task.
         """
 
-    def set_state(self, state):
-        self._state = state
+    @abc.abstractmethod
+    def _create_package(self):
+        """Create package from function using importer.
+        """
 
 
 class RemoteEvalExecute(Task):
-    import_and_call = 'import_and_call'
-
-    def __init__(self, eval_dumps):
-        super(RemoteEvalExecute, self).__init__()
-        self._eval_dumps = eval_dumps
 
     def run(self):
         # pylint: disable=eval-used
-        self._state[self.import_and_call] = eval(self._eval_dumps)
+        exstracted_package = eval(self._package)
+        self._importer = exstracted_package.importer
+        return exstracted_package.obj(self._function.arg)
+
+    def _create_package(self):
+        return self._importer.create_eval_package(self.function)
 
 
 class RemoteExecute(Task):
-    def __init__(self, dumps, *args):
-        super(RemoteExecute, self).__init__()
-        self._dumps = dumps
-        self._args = args
-
     def run(self):
-        import_and_call = self._state[RemoteEvalExecute.import_and_call]
-        return import_and_call(self._dumps, *self._args)
+        obj = self._importer.extract_package(self._package)
+        return obj(self._function.arg)
+
+    def _create_package(self):
+        return self._importer.create_package(self.function)

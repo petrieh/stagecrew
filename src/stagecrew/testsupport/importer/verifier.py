@@ -10,7 +10,7 @@ from .task import (
 __copyright__ = 'Copyright (C) 2020, Nokia'
 
 
-class Function(namedtuple('Function', ['module', 'function'])):
+class Function(namedtuple('Function', ['function', 'arg'])):
     pass
 
 
@@ -39,27 +39,22 @@ class ImporterVerifierBase(object):
 
 class EndToEndVerifier(ImporterVerifierBase):
     def verify(self, importer):
-        import_and_call = self._get_object_for_module_attr('manager', 'import_and_call')
-        importer.eval_dumps(import_and_call)
-        self._remote_eval_execute(importer)
-        for f in self._functions():
-            importer.dumps(f.function)
-            importer.import_from_object(f.function)
-            arg = 'arg'
-            assert self._remote_execute(importer, arg) == f.function(arg)
+        arg = 'arg'
+        for task in self._tasks(importer, arg):
+            importer.import_from_object(task.function)
+            assert self._run_remote_task(task) == task.function(arg)
 
-    def _functions(self):
-        for m in ['a', 'b', 'c']:
-            yield Function(module=m,
-                           function=self._get_function(m))
+    def _tasks(self, importer, arg):
+        yield RemoteEvalExecute(importer=importer,
+                                function=Function(function=self._get_function('a'),
+                                                  arg=arg))
+
+        for m in ['b', 'c']:
+            yield RemoteExecute(importer=importer,
+                                function=Function(function=self._get_function(m),
+                                                  arg=arg))
 
     def _get_function(self, module):
         return self._get_object_for_module_attr(
             module=module,
             attr='{module}_func'.format(module=module))
-
-    def _remote_eval_execute(self, importer):
-        return self._run_remote_task(RemoteEvalExecute(importer.eval_dumps))
-
-    def _remote_execute(self, importer, arg):
-        return self._run_remote_task(RemoteExecute(importer.dumps, arg))
