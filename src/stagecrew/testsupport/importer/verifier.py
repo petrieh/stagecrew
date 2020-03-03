@@ -3,8 +3,8 @@ from collections import namedtuple
 import six
 
 from .task import (
-    RemoteEvalExecute,
-    RemoteExecute)
+    RemoteEvalExecuteCreator,
+    RemoteExecuteCreator)
 
 
 __copyright__ = 'Copyright (C) 2020, Nokia'
@@ -40,19 +40,21 @@ class ImporterVerifierBase(object):
 class EndToEndVerifier(ImporterVerifierBase):
     def verify(self, importer):
         arg = 'arg'
-        for task in self._tasks(importer, arg):
-            importer.import_from_object(task.function)
-            assert self._run_remote_task(task) == task.function(arg)
+        for taskcreator in self._taskcreators(importer, arg):
+            importer.import_from_object(taskcreator.function)
+            task = taskcreator.create()
+            assert self._run_remote_task(task) == taskcreator.function(arg)
 
-    def _tasks(self, importer, arg):
-        yield RemoteEvalExecute(importer=importer,
-                                function=Function(function=self._get_function('a'),
-                                                  arg=arg))
-
+    def _taskcreators(self, importer, arg):
+        yield RemoteEvalExecuteCreator(
+            importer=importer,
+            function=Function(function=self._get_function('a'),
+                              arg=arg))
         for m in ['b', 'c']:
-            yield RemoteExecute(importer=importer,
-                                function=Function(function=self._get_function(m),
-                                                  arg=arg))
+            yield RemoteExecuteCreator(
+                importer=importer,
+                function=Function(function=self._get_function(m),
+                                  arg=arg))
 
     def _get_function(self, module):
         return self._get_object_for_module_attr(
