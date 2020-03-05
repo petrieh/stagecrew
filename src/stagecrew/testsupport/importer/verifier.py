@@ -40,9 +40,11 @@ class ImporterVerifierBase(object):
 class EndToEndVerifier(ImporterVerifierBase):
     def verify(self, importer):
         arg = 'arg'
+        imported_args = []
         for taskcreator in self._taskcreators(importer, arg):
             importer.import_from_object(taskcreator.function)
-            task = taskcreator.create()
+            task = taskcreator.create(*imported_args)
+            imported_args = [task.current_package.imported]
             assert self._run_remote_task(task) == taskcreator.function(arg)
 
     def _taskcreators(self, importer, arg):

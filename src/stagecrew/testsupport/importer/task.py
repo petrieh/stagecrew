@@ -10,7 +10,7 @@ class Task(object):
     _importer = None
 
     def __init__(self, package, arg):
-        self._package = package
+        self._package = package.package
         self._arg = arg
 
     @abc.abstractmethod
@@ -20,21 +20,26 @@ class Task(object):
 
 
 @six.add_metaclass(abc.ABCMeta)
-class TaskCreator(object):
+class TaskCreatorBase(object):
     def __init__(self, importer, function):
         self._importer = importer
         self._function = function
-        self._package = self._create_package()
+        self._current_package = None
 
     @property
     def function(self):
         return self._function.function
 
-    def create(self):
-        return self._task_cls(self._package, self.function.arg)
+    @property
+    def current_package(self):
+        return self._current_package
+
+    def create(self, imported):
+        self._current_package = self._create_package(imported)
+        return self._task_cls(self._current_package, self.function.arg)
 
     @abc.abstractmethod
-    def _create_package(self):
+    def _create_package(self, imported):
         """Create package from function using importer.
         """
 
@@ -52,10 +57,10 @@ class RemoteEvalExecute(Task):
         return exstracted_package.obj(self._arg)
 
 
-class RemoteEvalExecuteCreator(TaskCreator):
+class RemoteEvalExecuteCreator(TaskCreatorBase):
 
-    def _create_package(self):
-        return self._importer.create_eval_package(self.function)
+    def _create_package(self, imported):
+        return self._importer.create_eval_package(self.function, imported)
 
     @property
     def _task_cls(self):
@@ -68,9 +73,9 @@ class RemoteExecute(Task):
         return obj(self._arg)
 
 
-class RemoteExecuteCreator(TaskCreator):
-    def _create_package(self):
-        return self._importer.create_package(self.function)
+class RemoteExecuteCreator(TaskCreatorBase):
+    def _create_package(self, imported):
+        return self._importer.create_package(self.function, imported)
 
     @property
     def _task_cls(self):
