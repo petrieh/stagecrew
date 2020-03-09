@@ -1,5 +1,7 @@
 import abc
+import sys
 from collections import namedtuple
+from contextlib import contextmanager
 import six
 
 from .task import (
@@ -27,10 +29,19 @@ class ImporterVerifierBase(object):
         """
 
     def _get_object_for_module_attr(self, module, attr):
-        with self._package.tmpdir.as_cwd():
-            p = __import__('.'.join([self._package, module]))
+        with self._tmpdir_in_sys_path():
+            full_module_path = '.'.join([self._package.name, module])
+            p = __import__(full_module_path)
             m = getattr(p, module)
             return getattr(m, attr)
+
+    @contextmanager
+    def _tmpdir_in_sys_path(self):
+        try:
+            sys.path.insert(0, str(self._package.tmpdir))
+            yield
+        finally:
+            sys.path = [p for p in sys.path if p != str(self._package.tmpdir)]
 
     def _run_remote_task(self, task):
         self._runner.task_queue.put(task)

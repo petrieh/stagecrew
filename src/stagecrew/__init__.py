@@ -1,6 +1,8 @@
-from .importer.importer import Importer
+from .importer import (
+    ImporterBase,
+    IncrImporter)
 
 
 __copyright__ = 'Copyright (C) 2020, Nokia'
 
-__all__ = ['Importer']
+__all__ = ['ImporterBase', 'IncrImporter']
