@@ -1,5 +1,6 @@
 import abc
 import sys
+import importlib
 from collections import namedtuple
 from contextlib import contextmanager
 import six
@@ -31,8 +32,7 @@ class ImporterVerifierBase(object):
     def _get_object_for_module_attr(self, module, attr):
         with self._tmpdir_in_sys_path():
             full_module_path = '.'.join([self._package.name, module])
-            p = __import__(full_module_path)
-            m = getattr(p, module)
+            m = importlib.import_module(full_module_path)
             return getattr(m, attr)
 
     @contextmanager
