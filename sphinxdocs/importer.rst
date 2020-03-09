@@ -13,16 +13,16 @@ Another way is to write a completely new importer similarly than described in
 
 The basic idea is to re-import the required module with the new name created
 from the full file path of the module. The modules which should be imported
-along with the given module are informed via *IMPORTS* global variable in the
-module.  In more detail, *IMPORTS* contains list of the functions, classes or
+along with the given module are informed via *__deps__* global variable in the
+module.  In more detail, *__deps__* contains list of the functions, classes or
 modules imported via import statements. After creating the module from the
-source, this *IMPORTS* is checked and the associated modules are imported
+source, this *__deps__* is checked and the associated modules are imported
 recursively.  The associated modules can be found directly if the import is a
 module otherwise *__module__* attribute is looked and the associated module is
 either imported or looked from *sys.modules*. The latter is used e.g.
 in *pickle.whichmodule* function.
 
-Finally, the attributes in the module listed in *IMPORTS* are replaced with the
+Finally, the attributes in the module listed in *__deps__* are replaced with the
 attributes from the importer imported modules instead of built-in.
 
 This induced bundle of the modules can then be transferred anywhere and
