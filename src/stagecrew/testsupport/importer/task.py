@@ -54,7 +54,7 @@ class RemoteEvalExecute(TaskBase):
         # pylint: disable=eval-used
         exstracted_package = eval(self._package)
         self._importer = exstracted_package.importer
-        return exstracted_package.obj(self._arg)
+        return exstracted_package.entry_point(self._arg)
 
 
 class RemoteEvalExecuteCreator(TaskCreatorBase):
@@ -70,8 +70,8 @@ class RemoteEvalExecuteCreator(TaskCreatorBase):
 
 class RemoteExecute(TaskBase):
     def run(self):
-        obj = self._importer.extract_package(self._package)
-        return obj(self._arg)
+        entry_point = self._importer.extract_package(self._package)
+        return entry_point(self._arg)
 
 
 class RemoteExecuteCreator(TaskCreatorBase):
