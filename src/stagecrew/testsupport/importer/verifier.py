@@ -53,7 +53,7 @@ class EndToEndVerifier(ImporterVerifierBase):
         arg = 'arg'
         imports = None
         for taskcreator in self._taskcreators(importer, arg):
-            f = importer.import_from_object(taskcreator.function)
+            f = importer.import_from_entry_point(taskcreator.function)
             task = self._create_task(taskcreator, imports)
             imports = taskcreator.current_package.imports
             assert self._run_remote_task(task) == f(arg)
