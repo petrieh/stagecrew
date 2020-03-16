@@ -1,17 +1,19 @@
 import types
 import sys
 from .importerbase import ImporterBase
+from .localmetapathimporter import LocalMetaPathImporter
+
 
 __copyright__ = 'Copyright (C) 2020, Nokia'
 
-__deps__ = ['ImporterBase']
+__deps__ = ['ImporterBase', 'LocalMetaPathImporter']
 
 
 class IncrImporter(ImporterBase):
 
     def import_from_entry_point(self, entry_point):
-        e = EntryPoint(entry_point)
-        e.import_module()
+        limporter = LocalMetaPathImporter()
+        limporter.import_from_entry_point(EntryPoint(entry_point))
 
     def create_eval_package(self, entry_point):
         assert 0
@@ -27,11 +29,8 @@ class EntryPoint(object):
     def __init__(self, entry_point):
         self._entry_point = entry_point
 
-    def import_module(self):
-        assert 0
-
     @property
-    def _module_source_path(self):
+    def module_source_path(self):
         return (self._module_path
                 if self._module_path.endswith('.py') else
                 self._module_path[:-1])
