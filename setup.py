@@ -38,7 +38,7 @@ setup(
     author='Petri Huovinen',
     author_email='petri.huovinen@nokia.com',
     description='Actor system library for testing',
-    install_requires=['six'],
+    install_requires=['six>=1.12.0'],
     long_description=read('README.rst'),
     license='BSD-3-Clause',
     classifiers=['Intended Audience :: Developers',
