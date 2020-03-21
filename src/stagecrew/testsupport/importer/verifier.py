@@ -70,7 +70,7 @@ class EndToEndVerifier(ImporterVerifierBase):
             importer=importer,
             function=Function(function=self._get_function('a'),
                               arg=arg))
-        for m in ['b', 'c']:
+        for m in ['b', 'c', 'd', 'e']:
             yield RemoteExecuteCreator(
                 importer=importer,
                 function=Function(function=self._get_function(m),
