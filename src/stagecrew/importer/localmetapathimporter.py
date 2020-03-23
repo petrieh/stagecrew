@@ -33,6 +33,27 @@ __deps__ = ['six', 'MetaPathSingleton', 'MetaPathImporterBase']
 # This is optimization as we could of course re-compile packages every time and
 # remove also flat package keys after the import process.
 
+# The above procedure is not complete: first of all, it assumes that all modules
+# and packages are file system based. This assumption is fair enough: we can
+# require this, and if more generic modules and packages are to be supported,
+# that could be part of the enhancement of this importer or then can be
+# part of totally new importer. Secondly, it is not enough to assume that
+# the module a.b.modc is originally import like
+# from a.b import modc
+# it can well be from
+# from something.else import modc
+# The actual parent package in this sense cannot be found easily with
+# *find_module* if we do not invalidate all sys.modules in order to get
+# full list of *find_module* calls. So the procedure should be something like
+# 1. Invalidate sys.modules and make a backup of it
+# 2. Install finder to sys.meta_path which logs all the entries called but
+#    just returns then None
+# 3. Re-import the module associated with entry_point
+# 4. Find the attributes in __deps__ from the modules imported in the step 2.
+# 5. The list of modules + attributes formed in the step 4 should be
+#    used for re-creating modules in RemoteMetaPathImporter.
+# 6. Restore backed up sys.modules.
+
 
 class LocalModule(object):
     def __init__(self, entry_point):
