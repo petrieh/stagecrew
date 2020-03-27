@@ -55,6 +55,22 @@ __deps__ = ['six', 'MetaPathSingleton', 'MetaPathImporterBase']
 # 6. Restore backed up sys.modules.
 
 
+# Maybe it is just better not to change keys at all and in local do any
+# re-import. Instead, in remote mimic the local imports For that purpose, we
+# need to create all dependencies. To each dependency module we have to create
+# ancestor modules (for a.b.c ancestors would be a and a.b). Then we have to
+# check all the attributes of the sys.modules modules and if they match with
+# any modules listed, we have to remove them from cache as well as direct
+# dependencies and their ancestors).  Next, we check that which modules are
+# really imported when the entry_point module is re-imported by checking diffs.
+# This is a list of the modules we have to transfer to remote. However, only
+# direct dependencies should be send as source code, for others, it is enough
+# to send only attribute dictionary. The implicit dependencies can placed
+# temporary to remote meta_path finder (as simple modules or packages with
+# __dict__ from transported attribute dictionary the package search path should
+# be given as well so that the finder can directly return correct module or
+# package from the calculated path.
+
 class LocalModule(object):
     def __init__(self, entry_point):
         self._entry_point = entry_point
@@ -76,6 +92,10 @@ class LocalModule(object):
         exec(c, m.__dict__)  # pylint: disable=exec-used
         return m
 
+
+class LocalImporter(object):
+    def import_from_entry_point(self, entry_point):
+        assert 0
 
 @six.add_metaclass(MetaPathSingleton)
 class LocalMetaPathImporter(MetaPathImporterBase):
