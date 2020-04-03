@@ -70,6 +70,35 @@ __deps__ = ['six', 'MetaPathSingleton', 'MetaPathImporterBase']
 # __dict__ from transported attribute dictionary the package search path should
 # be given as well so that the finder can directly return correct module or
 # package from the calculated path.
+#
+# In [1]: from examples.e import e_func
+# In [2]: import inspect
+# In [3]: inspect.getsource(e_func)
+# Out[3]: 'def e_func(arg):\n    return EExample(arg)\n'
+# In [4]: inspect.getsourcefile(e_func)
+# Out[4]: '/home/pehuovin/stagecrew/src/stagecrew/testsupport/importer/examples/epackage/emod.py'
+# In [5]: inspect.getmodule(e_func)
+# Out[5]: <module 'examples.epackage.emod' from '/home/pehuovin/stagecrew/src/stagecrew/testsupport/importer/examples/epackage/emod.py'>
+# In [6]: inspect.getfile(e_func)
+# Out[6]: '/home/pehuovin/stagecrew/src/stagecrew/testsupport/importer/examples/epackage/emod.py'
+# In [7]: inspect.getmodule(e_func).__package__
+# Out[7]: 'examples.epackage'
+#
+# Use importlib.util.find_spec (or imp.find_module in Python 2) for
+# finding modules which from which the source can be found (not e.g. built-in)
+# and which are not frozen. In Python 2 this is show as ret[3] != 1 and
+# in python 3::
+# >> from importlib.machinery import SourceFileLoader
+# >> spec = importlib.util.find_spec('mymodule')
+# >> isinstance(spec.loader, SourceFileLoader)
+# >> Moreover, standard libraries has to be used from
+# pip install stdlib-list
+# >> from stdlib_list import short_versions, stdlib_list
+# >> for v in short_versions:
+# ...    d[v] = stdlib_list[v]
+# Now this dictionary d has to be transferred and used for checking
+# whether or not a library is from standard libraries
+
 
 class LocalModule(object):
     def __init__(self, entry_point):
