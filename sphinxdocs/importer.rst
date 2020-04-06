@@ -34,6 +34,52 @@ Essentially, the finder should have the context of the currently imported
 module. Using that, it can then map imports to modules imported previous import
 steps.
 
+Improved importer
+-----------------
+
+Instead of *__deps__* it is better to import all which are needed by the Python
+object (i.e. function, class or module). We can exclude standard library
+modules and not source file modules (like frozen or built-in). Instead of the
+module level *__deps__* we could use global configuration for excluded and
+included modules. This configuration could be a list of include and exclude
+rule either for full tree or for specific objects. In conflicting case or in
+overlapping case, always the later rule in the list will be in force. Also,
+root level trees should be be supported. For example::
+
+    recursive-exclude a
+    recursive-include a.b
+    exclude a.b.c
+
+This means that no modules a.* are included but modules under a.b except a.b.c
+(if they are needed by the object). If root level rules *include-all* or
+*exclude-all* is added to the list of rules, then none of the rules before this
+all rule has no effect.
+
+We use importlib.util.find_spec (or imp.find_module in Python 2) for finding
+source modules. The information from this find function can be used for
+packaging module data.
+
+Standard libraries can be found using *stdlib-list* library. This library
+cannot be imported by this importer as it has data files. Therefore, the
+library should be imported in the function which is only called if the standard
+library collection is not yet generated. The standard library dictionary could
+be transferred as part of the eval-package e.g in json-format.
+
+Use importlib.util.find_spec (or imp.find_module in Python 2) for finding
+modules which from which the source can be found (not e.g. built-in) and which
+are not frozen. In Python 2 this is show as ret[3] != 1 and in python 3::
+
+   >> from importlib.machinery import SourceFileLoader
+   >> spec = importlib.util.find_spec('mymodule')
+   >> isinstance(spec.loader, SourceFileLoader)
+
+Moreover, standard libraries has to be used from::
+
+   pip install stdlib-list
+   >> from stdlib_list import short_versions, stdlib_list
+   >> for v in short_versions:
+   ...    d[v] = stdlib_list[v]
+
 .. _`issue-13`: https://github.com/petrieh/crl-interactivesessions/tree/issue-13
 .. _`python imports`: https://blog.ffledgling.com/python-imports-i.html
 .. _`importer protocol`: https://www.python.org/dev/peps/pep-0302/#specification-part-1-the-importer-protocol
