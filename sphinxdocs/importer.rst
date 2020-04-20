@@ -80,24 +80,24 @@ Moreover, standard libraries has to be used from::
    >> for v in short_versions:
    ...    d[v] = stdlib_list[v]
 
-There is also a limited support for data files. Binary files can be registered
-to importer.  There is no support for file system files (but that is of course
-easy to implement using binary file support)::
+There is also a limited support for data files. Binary content can be
+registered to importer.  There is no support for file system files (but that is
+of course easy to implement using binary file support)::
 
     >> from stagecrew import Importer
     >> i = Importer()
     >> with open('some-data.txt', 'rb') as f:
-    ...    i.register_data('some-data', f)
+    ...    i.register_data('some-data', f.read())
 
-The __file__ attribute in when
-imported to remote system will point to
+The __file__ attribute in when imported to remote system will point to
 /current/working/directory/.stagecrew/full/path/to/module. Current
 implementation does neither create .stagecrew directory nor create any
 directories or files under it.  However, importer has *get_data* method which
 can be used for retrieving registered data using identifier given in the data
-registration. This *get_data* returns the content of the file as a binary string.
-The reasoning for limited support is that we need to support at least importing
-stdlib dictionary content (e.g. in json format).
+registration. This *get_data* returns the content of the file as a binary
+string.  The reasoning for limited support is that we need to support at least
+importing stdlib dictionary content (e.g. in json format). There could be
+as well *is_data* method, which checks whether the identifier is registered.
 
 .. _`issue-13`: https://github.com/petrieh/crl-interactivesessions/tree/issue-13
 .. _`python imports`: https://blog.ffledgling.com/python-imports-i.html
