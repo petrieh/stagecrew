@@ -4,8 +4,6 @@ from .a import (
 
 __copyright__ = 'Copyright (C) 2020, Nokia'
 
-__deps__ = ['AExample', a_func]
-
 
 class BExample(AExample):
     def __init__(self, a, b):

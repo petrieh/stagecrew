@@ -5,10 +5,6 @@ from .b import (
 
 
 __copyright__ = 'Copyright (C) 2020, Nokia'
-# __deps__ is importer metadata containing list of attribute objects or
-# alternatively attribute names as strings of the module which this module
-# depends on and which has to be imported and packaged by the importer.
-__deps__ = [a, 'b_func', BExample]
 
 
 class CExample(BExample):
