@@ -7,7 +7,7 @@ class ImportRecorder(object):
     def __init__(self):
         self._records = []
 
-    @contextmanager()
+    @contextmanager
     def recording(self):
         self._records = []
         self._setup_metapath()
@@ -16,13 +16,16 @@ class ImportRecorder(object):
         finally:
             self._clear_metapath()
 
+    @property
+    def records(self):
+        return self._records
 
     def find_module(self, fullname, path=None):
-        self._records = ImportRecord(fullname=fullname, path=path)
+        self._records.append(ImportRecord(fullname=fullname, path=path))
 
     def _setup_metapath(self):
         self._clear_metapath()
-        sÿs.meta_path.insert(0, self)
+        sys.meta_path.insert(0, self)
 
     def _clear_metapath(self):
         sys.meta_path = [i for i in sys.meta_path if i is not self]
@@ -30,6 +33,3 @@ class ImportRecorder(object):
 
 class ImportRecord(namedtuple('ImportRecord', ['fullname', 'path'])):
     pass
-
-
-
