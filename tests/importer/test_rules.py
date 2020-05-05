@@ -3,7 +3,8 @@ from stagecrew.importer import (
     RecursiveExclude,
     RecursiveInclude,
     Include,
-    Exclude)
+    Exclude,
+    NotApplicable)
 
 
 def test_rules():
@@ -17,7 +18,8 @@ def test_rules():
     assert r.is_included('a.b')
     assert r.is_included('a.b.d')
     assert not r.is_included('a.b.c')
-    assert r.is.included('a.b.c.d')
+    assert r.is_included('a.b.c.d')
     assert not r.is_included('a.b.d')
     assert r.is_included('b.c')
     assert not r.is_included('b.c.d')
+    assert r.is_included('c') is NotApplicable
