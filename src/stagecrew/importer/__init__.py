@@ -1,19 +1,17 @@
 from .importerbase import ImporterBase
 from .incrimporter import IncrImporter
-from .rules import (
-    Rules,
-    RecursiveExclude,
-    RecursiveInclude,
-    Include,
-    Exclude,
-    NotApplicable)
+from .modulerules import (
+    ModuleRules,
+    IncludeRule,
+    ExcludeRule,
+    RecursiveIncludeRule,
+    RecursiveExcludeRule)
 
 
 __all__ = ['ImporterBase',
            'IncrImporter',
-           'Rules',
-           'RecursiveExclude',
-           'RecursiveInclude',
-           'Include',
-           'Exclude',
-           'NotApplicable']
+           'ModuleRules',
+           'IncludeRule',
+           'ExcludeRule',
+           'RecursiveIncludeRule',
+           'RecursiveExcludeRule']

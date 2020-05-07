@@ -54,10 +54,11 @@ class EntryPoint(object):
 
     def _initialize_uniq_entry_points(self):
         self._uniq_entry_points.add(self)
-        for c in self._child_entry_points):
+        for c in self._child_entry_points():
             self._uniq_entry_points += c.uniq_entry_points
 
-    def _child_entry_points(
+    def _child_entry_points(self):
+        assert 0
 
     @property
     def _module_deps(self):
