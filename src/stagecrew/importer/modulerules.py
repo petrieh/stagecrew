@@ -3,6 +3,9 @@ import six
 from tribool import Tribool
 
 
+__copyright__ = 'Copyright (C) 2020, Nokia'
+
+
 class ModuleRules(object):
     def __init__(self):
         self._rules = []

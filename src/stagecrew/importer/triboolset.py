@@ -1,6 +1,8 @@
 from tribool import Tribool
 from .basictriboolset import BasicTriboolSet
 
+__copyright__ = 'Copyright (C) 2020, Nokia'
+
 
 class TriboolSet(BasicTriboolSet):
     def __init__(self, contains_as_tribool, base_set):

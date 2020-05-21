@@ -2,6 +2,8 @@ import sys
 from contextlib import contextmanager
 from collections import namedtuple
 
+__copyright__ = 'Copyright (C) 2020, Nokia'
+
 
 class ImportRecorder(object):
     def __init__(self):

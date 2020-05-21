@@ -1,6 +1,8 @@
 from tribool import Tribool
 from stagecrew.importer import TriboolSet
 
+__copyright__ = 'Copyright (C) 2020, Nokia'
+
 
 def contains_as_tribool_factory(s):
     def contains_as_tribool(obj):
