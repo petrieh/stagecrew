@@ -13,10 +13,13 @@ class ModuleRules(object):
     def add(self, rule):
         self._rules.append(rule)
 
+    @property
+    def triboolset(self):
+        assert 0
+
     def contains_as_tribool(self, module):
-        """This is the same as applying rules using the expression a & ~(b ^
-        ~b) | b & (b ^ ~b). With 2-valued logic this would be just always b but
-        for 3-valued logic this is b iff b is determined.
+        """This is the same as applying rules using the expression
+        a & ?b | b & ~?b.
         """
         contains = Tribool()
         for contains in self._boolean_contains_gen(module):
