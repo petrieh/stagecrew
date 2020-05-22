@@ -7,12 +7,12 @@ class TriboolSet(object):
     """Tribool valued function defined fuzzy set where the membership function
     *m* can be expressed formally e.g. in the following manner::
 
-       m(s) = 0, iff f(s) is Tribool(False),
-       m(s) = 1/2, iff f(s) is Tribool() (Undeterminate),
-       m(s) = 1, iff f(s) is Tribool(True),
+       m(obj) = 0, if f(obj) is Tribool(False),
+       m(obj) = 1/2, if f(obj) is Tribool() (Undeterminate),
+       m(obj) = 1, if f(obj) is Tribool(True),
 
-    where f = *contains_as_tribool* mapping from Python objects to Tribool
-    objects.
+    where f = *contains_as_tribool* is a mapping from Python objects *obj* to
+    Tribool objects.
     """
 
     def __init__(self, contains_as_tribool):
@@ -40,7 +40,7 @@ class TriboolSet(object):
         return filter(self.fully_contains, iterable)
 
     def intersection(self, other):
-        def intersection_func(obj):
+        def intersection_contains(obj):
             return self.contains_as_tribool(obj) & other.contains_as_tribool(obj)
 
-        return TriboolSet(intersection_func)
+        return TriboolSet(intersection_contains)
