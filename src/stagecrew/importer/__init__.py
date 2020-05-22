@@ -6,7 +6,6 @@ from .modulerules import (
     ExcludeRule,
     RecursiveIncludeRule,
     RecursiveExcludeRule)
-from .basictriboolset import BasicTriboolSet
 from .triboolset import TriboolSet
 
 
@@ -19,5 +18,4 @@ __all__ = ['ImporterBase',
            'ExcludeRule',
            'RecursiveIncludeRule',
            'RecursiveExcludeRule',
-           'BasicTriboolSet',
            'TriboolSet']

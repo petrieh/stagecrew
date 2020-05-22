@@ -1,32 +1,46 @@
 from tribool import Tribool
-from .basictriboolset import BasicTriboolSet
 
 __copyright__ = 'Copyright (C) 2020, Nokia'
 
 
-class TriboolSet(BasicTriboolSet):
-    def __init__(self, contains_as_tribool, base_set):
-        super(TriboolSet, self).__init__(contains_as_tribool)
-        self._base_set = base_set
+class TriboolSet(object):
+    """Tribool valued function defined fuzzy set where the membership function
+    *m* can be expressed formally e.g. in the following manner::
 
-    @property
-    def base_set(self):
-        return self._base_set
+       m(s) = 0, iff f(s) is Tribool(False),
+       m(s) = 1/2, iff f(s) is Tribool() (Undeterminate),
+       m(s) = 1, iff f(s) is Tribool(True),
+
+    where f = *contains_as_tribool* mapping from Python objects to Tribool
+    objects.
+    """
+
+    def __init__(self, contains_as_tribool):
+        self._contains_as_tribool = contains_as_tribool
 
     def contains_as_tribool(self, obj):
-        return self._contains_as_tribool(obj) if obj in self.base_set else Tribool(False)
+        return self._contains_as_tribool(obj)
+
+    def excludes(self, obj):
+        return self.contains_as_tribool(obj) is Tribool(False)
+
+    def excludes_iter(self, iterable):
+        return filter(self.excludes, iterable)
+
+    def partially_contains(self, obj):
+        return self.contains_as_tribool(obj) is Tribool()
+
+    def partially_contains_iter(self, iterable):
+        return filter(self.partially_contains, iterable)
+
+    def fully_contains(self, obj):
+        return self.contains_as_tribool(obj) is Tribool(True)
+
+    def fully_contains_iter(self, iterable):
+        return filter(self.fully_contains, iterable)
 
     def intersection(self, other):
-        base_set_intersection = self.base_set.intersection(other.base_set)
-        super_inst = super(TriboolSet, self).intersection(other)
-        return TriboolSet(super_inst.contains_as_tribool, base_set_intersection)
+        def intersection_func(obj):
+            return self.contains_as_tribool(obj) & other.contains_as_tribool(obj)
 
-    def partially_contains_gen(self):
-        for o in self.base_set:
-            if self.partially_contains(o):
-                yield o
-
-    def fully_contains_gen(self):
-        for o in self.base_set:
-            if self.fully_contains(o):
-                yield o
+        return TriboolSet(intersection_func)
