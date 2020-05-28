@@ -40,10 +40,7 @@ class TriboolSet(object):
         return filter(self.fully_contains, iterable)
 
     def intersection(self, other):
-        def intersection_contains(obj):
-            return self.contains_as_tribool(obj) & other.contains_as_tribool(obj)
-
-        return TriboolSet(intersection_contains)
+        return self.operation(lambda a, b: a & b, other)
 
     def operation(self, oper, other):
         def oper_contains(obj):
