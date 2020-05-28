@@ -44,3 +44,9 @@ class TriboolSet(object):
             return self.contains_as_tribool(obj) & other.contains_as_tribool(obj)
 
         return TriboolSet(intersection_contains)
+
+    def operation(self, oper, other):
+        def oper_contains(obj):
+            return oper(self.contains_as_tribool(obj), other.contains_as_tribool(obj))
+
+        return TriboolSet(oper_contains)

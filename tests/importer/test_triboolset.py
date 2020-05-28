@@ -74,3 +74,16 @@ def test_partially_contains_iter(triboolset_a):
 
 def test_fully_contains_iter(triboolset_a):
     assert set(triboolset_a.fully_contains_iter({'a', 'b', 'c'})) == {'c'}
+
+
+def test_operation(triboolset_a, triboolset_b):
+    def oper(a, b):
+        return a if b is Tribool() else b
+
+    expected = {'a': Tribool(False),
+                'b': Tribool(True),
+                'c': Tribool(False)}
+
+    c = triboolset_a.operation(oper, triboolset_b)
+
+    assert {o: c.contains_as_tribool(o) for o in ['a', 'b', 'c']} == expected
