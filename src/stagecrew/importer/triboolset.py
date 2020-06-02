@@ -1,4 +1,6 @@
+import operator
 from tribool import Tribool
+
 
 __copyright__ = 'Copyright (C) 2020, Nokia'
 
@@ -40,10 +42,33 @@ class TriboolSet(object):
         return filter(self.fully_contains, iterable)
 
     def intersection(self, other):
-        return self.operation(lambda a, b: a & b, other)
+        return self & other
 
-    def operation(self, oper, other):
+    def intersection_update(self, other):
+        self.operator_update(operator.__and__, other)
+
+    def operator(self, oper, other):
+        return self._create(self._create_oper_contains(oper, other))
+
+    def operator_update(self, oper, other):
+        self._contains_as_tribool = self._create_oper_contains(oper, other)
+
+    def _create_oper_contains(self, oper, other):
+        self_copy = self.copy()
+        other_copy = other.copy()
+
         def oper_contains(obj):
-            return oper(self.contains_as_tribool(obj), other.contains_as_tribool(obj))
+            return oper(self_copy.contains_as_tribool(obj),
+                        other_copy.contains_as_tribool(obj))
 
-        return TriboolSet(oper_contains)
+        return oper_contains
+
+    def copy(self):
+        return self._create(self._contains_as_tribool)
+
+    @classmethod
+    def _create(cls, contains_as_tribool):
+        return cls(contains_as_tribool)
+
+    def __and__(self, other):
+        return self.operator(operator.__and__, other)
