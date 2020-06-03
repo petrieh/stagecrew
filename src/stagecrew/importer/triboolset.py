@@ -1,4 +1,5 @@
 import operator
+from collections import namedtuple
 from tribool import Tribool
 
 
@@ -13,12 +14,17 @@ class TriboolSet(object):
        m(obj) = 1/2, if f(obj) is Tribool() (Undeterminate),
        m(obj) = 1, if f(obj) is Tribool(True),
 
-    where f = *contains_as_tribool* is a mapping from Python objects *obj* to
-    Tribool objects.
+    where f = *contains_as_tribool* is a callable with Python objects *obj* argument
+    returning Tribool object.
     """
 
     def __init__(self, contains_as_tribool):
         self._contains_as_tribool = contains_as_tribool
+
+    def __repr__(self):
+        return '{cls}({contains_as_tribool})'.format(
+            cls=self.__class__.__name__,
+            contains_as_tribool=self._contains_as_tribool)
 
     def contains_as_tribool(self, obj):
         return self._contains_as_tribool(obj)
@@ -47,21 +53,17 @@ class TriboolSet(object):
     def intersection_update(self, other):
         self.operator_update(operator.__and__, other)
 
+    def __and__(self, other):
+        return self.operator(operator.__and__, other)
+
     def operator(self, oper, other):
-        return self._create(self._create_oper_contains(oper, other))
+        return self._create(self._create_set_operation(oper, other))
 
     def operator_update(self, oper, other):
-        self._contains_as_tribool = self._create_oper_contains(oper, other)
+        self._contains_as_tribool = self._create_set_operation(oper, other)
 
-    def _create_oper_contains(self, oper, other):
-        self_copy = self.copy()
-        other_copy = other.copy()
-
-        def oper_contains(obj):
-            return oper(self_copy.contains_as_tribool(obj),
-                        other_copy.contains_as_tribool(obj))
-
-        return oper_contains
+    def _create_set_operation(self, oper, other):
+        return SetOperation(oper=oper, a=self.copy(), b=other.copy())
 
     def copy(self):
         return self._create(self._contains_as_tribool)
@@ -70,5 +72,18 @@ class TriboolSet(object):
     def _create(cls, contains_as_tribool):
         return cls(contains_as_tribool)
 
-    def __and__(self, other):
-        return self.operator(operator.__and__, other)
+
+class SetOperation(namedtuple('SetOperation', ['oper', 'a', 'b'])):
+    """Functor implementing contains_as_tribool for combined TriboolSet defined
+    by operator *oper* and TriboolSet operands *a* and *b*.
+
+    Arguments follow PN (Polish notation) order.
+
+    Args:
+        oper(callable): Set operation operator
+        a(TriboolSet): left operand
+        b(TriboolSet): right operand
+    """
+    def __call__(self, obj):
+        return self.oper(self.a.contains_as_tribool(obj),
+                         self.b.contains_as_tribool(obj))
