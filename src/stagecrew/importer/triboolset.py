@@ -1,6 +1,7 @@
-import operator
-from collections import namedtuple
 from tribool import Tribool
+from .setoperation import (
+    AndOperation,
+    get_set_operation_factory)
 
 
 __copyright__ = 'Copyright (C) 2020, Nokia'
@@ -51,19 +52,22 @@ class TriboolSet(object):
         return self & other
 
     def intersection_update(self, other):
-        self.operator_update(operator.__and__, other)
+        self._contains_as_tribool = self._create_set_operation(AndOperation, other)
+
+    def _create_set_operation(self, set_operation_factory, other):
+        return set_operation_factory(a=self.copy(), b=other.copy())
 
     def __and__(self, other):
-        return self.operator(operator.__and__, other)
+        return self.operator(AndOperation, other)
 
     def operator(self, oper, other):
-        return self._create(self._create_set_operation(oper, other))
+        set_operation_factory = get_set_operation_factory(oper)
+        return self._create(self._create_set_operation(set_operation_factory, other))
 
     def operator_update(self, oper, other):
-        self._contains_as_tribool = self._create_set_operation(oper, other)
-
-    def _create_set_operation(self, oper, other):
-        return SetOperation(oper=oper, a=self.copy(), b=other.copy())
+        set_operation_factory = get_set_operation_factory(oper)
+        self._contains_as_tribool = self._create_set_operation(
+            set_operation_factory, other)
 
     def copy(self):
         return self._create(self._contains_as_tribool)
@@ -71,19 +75,3 @@ class TriboolSet(object):
     @classmethod
     def _create(cls, contains_as_tribool):
         return cls(contains_as_tribool)
-
-
-class SetOperation(namedtuple('SetOperation', ['oper', 'a', 'b'])):
-    """Functor implementing contains_as_tribool for combined TriboolSet defined
-    by operator *oper* and TriboolSet operands *a* and *b*.
-
-    Arguments follow PN (Polish notation) order.
-
-    Args:
-        oper(callable): Set operation operator
-        a(TriboolSet): left operand
-        b(TriboolSet): right operand
-    """
-    def __call__(self, obj):
-        return self.oper(self.a.contains_as_tribool(obj),
-                         self.b.contains_as_tribool(obj))

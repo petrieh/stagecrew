@@ -100,6 +100,7 @@ def test_intersection_a_a(triboolset_a):
 
 
 def test_intersection_a_b(a_and_b):
+    print(a_and_b)
     assert a_and_b.partially_contains('b')
     for o in ['a', 'c']:
         assert a_and_b.excludes(o)
