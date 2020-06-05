@@ -1,8 +1,9 @@
 from tribool import Tribool
-from .setoperation import (
-    AndOperation,
-    get_set_operation_factory)
-
+import six
+from .contains import (
+    OperatorContains,
+    OperandsContainsBase,
+    LazyLeftAndContains)
 
 __copyright__ = 'Copyright (C) 2020, Nokia'
 
@@ -52,22 +53,21 @@ class TriboolSet(object):
         return self & other
 
     def intersection_update(self, other):
-        self._contains_as_tribool = self._create_set_operation(AndOperation, other)
+        self._contains_as_tribool = self._create_contains(LazyLeftAndContains, other)
 
-    def _create_set_operation(self, set_operation_factory, other):
-        return set_operation_factory(a=self.copy(), b=other.copy())
+    def _create_contains(self, contains_factory, other):
+        return contains_factory(a=self.copy(), b=other.copy())
 
     def __and__(self, other):
-        return self.operator(AndOperation, other)
+        return self.operator(LazyLeftAndContains, other)
 
     def operator(self, oper, other):
-        set_operation_factory = get_set_operation_factory(oper)
-        return self._create(self._create_set_operation(set_operation_factory, other))
+        contains_factory = self._get_contains_factory(oper)
+        return self._create(self._create_contains(contains_factory, other))
 
     def operator_update(self, oper, other):
-        set_operation_factory = get_set_operation_factory(oper)
-        self._contains_as_tribool = self._create_set_operation(
-            set_operation_factory, other)
+        contains_factory = self._get_contains_factory(oper)
+        self._contains_as_tribool = self._create_contains(contains_factory, other)
 
     def copy(self):
         return self._create(self._contains_as_tribool)
@@ -75,3 +75,9 @@ class TriboolSet(object):
     @classmethod
     def _create(cls, contains_as_tribool):
         return cls(contains_as_tribool)
+
+    @staticmethod
+    def _get_contains_factory(oper):
+        is_operands_contains = (
+            isinstance(oper, six.class_types) and issubclass(oper, OperandsContainsBase))
+        return oper if is_operands_contains else OperatorContains.create_factory(oper)

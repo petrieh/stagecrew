@@ -6,7 +6,17 @@ from tribool import Tribool
 __copyright__ = 'Copyright (C) 2020, Nokia'
 
 
-class DefaultSetOperation(namedtuple('DefaultSetOperation', ['oper', 'a', 'b'])):
+@six.add_metaclass(abc.ABCMeta)
+class ContainsBase(object):
+    """Base functor for TriboolSet contains_as_tribool implementation.
+    """
+    @abc.abstractmethod
+    def __call__(self, obj):
+        """Return Tribool object for *obj*.
+        """
+
+
+class OperatorContains(namedtuple('OperatorContains', ['oper', 'a', 'b']), ContainsBase):
     """Functor implementing contains_as_tribool for combined TriboolSet defined
     by operator *oper* and TriboolSet operands *a* and *b*.
 
@@ -22,39 +32,29 @@ class DefaultSetOperation(namedtuple('DefaultSetOperation', ['oper', 'a', 'b']))
                          self.b.contains_as_tribool(obj))
 
     @classmethod
-    def get_factory(cls, oper):
+    def create_factory(cls, oper):
         def factory(a, b):
             return cls(oper=oper, a=a, b=b)
+
         return factory
 
 
 @six.add_metaclass(abc.ABCMeta)
-class SetOperationBase(namedtuple('SetOperationBase', ['a', 'b'])):
-    """TriboolSet operation functor base class.  The implementation must define
-    new combined TriboolSet membership function *contains_as_tribool* as
-    __call__ implementation.
+class OperandsContainsBase(namedtuple('OperandsContainsBase', ['a', 'b']),
+                           ContainsBase):
+    """TriboolSet contains functor base for TriboolSet operands *a* and *b*.
     """
-    @abc.abstractmethod
+
+
+class LazyLeftAndContains(OperandsContainsBase):
+    """Lazy intersection (and) contains. Right operand is evaluated only if needed.
+    """
     def __call__(self, obj):
-        """Implement TriboolSet *contains_as_tribool* using TriboolSet operands
-        *_a* and *_b*.
-        """
+        a = self.a.contains_as_tribool(obj)
+        return a if a is Tribool(False) else a & self.b.contains_as_tribool(obj)
 
 
-class AndOperation(SetOperationBase):
-    def __call__(self, obj):
-        b = self.b.contains_as_tribool(obj)
-        return b if b is Tribool(False) else self.a.contains_as_tribool(obj) & b
-
-
-class DeterminedBElseA(SetOperationBase):
+class DeterminedBElseAContains(OperandsContainsBase):
     def __call__(self, obj):
         b = self.b.contains_as_tribool(obj)
         return self.a.contains_as_tribool(obj) if b is Tribool() else b
-
-
-def get_set_operation_factory(oper):
-    return (
-        oper
-        if isinstance(oper, six.class_types) and issubclass(oper, SetOperationBase) else
-        DefaultSetOperation.get_factory(oper))
