@@ -17,11 +17,15 @@ class TriboolSet(object):
        m(obj) = 1, if f(obj) is Tribool(True),
 
     where f = *contains_as_tribool* is a callable with Python objects *obj* argument
-    returning Tribool object.
+    returning Tribool object. For convenience, also TriboolSet object can be
+    given as *contains_as_tribool* function.
     """
 
     def __init__(self, contains_as_tribool):
-        self._contains_as_tribool = contains_as_tribool
+        self._contains_as_tribool = (
+            contains_as_tribool._contains_as_tribool
+            if isinstance(contains_as_tribool, TriboolSet) else
+            contains_as_tribool)
 
     def __repr__(self):
         return '{cls}({contains_as_tribool})'.format(

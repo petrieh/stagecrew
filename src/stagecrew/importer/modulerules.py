@@ -10,12 +10,10 @@ __copyright__ = 'Copyright (C) 2020, Nokia'
 
 
 def get_triboolset_from_rules(*rules):
-    def determined_b_else_a(rule_a, rule_b):
-        a = TriboolSet(rule_a)
-        b = TriboolSet(rule_b)
+    def determined_b_else_a(a, b):
         return a.operator(DeterminedBElseAContains, b)
 
-    return reduce(determined_b_else_a, rules)
+    return reduce(determined_b_else_a, map(TriboolSet, rules))
 
 
 class RuleBase(ContainsBase):  # pylint: disable=abstract-method

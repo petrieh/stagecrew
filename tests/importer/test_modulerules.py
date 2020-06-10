@@ -1,3 +1,4 @@
+import pytest
 from tribool import Tribool
 from stagecrew.importer import (
     IncludeRule,
@@ -22,3 +23,11 @@ def test_get_triboolset_from_rules():
     assert t.contains_as_tribool('b.c') is Tribool(True)
     assert t.contains_as_tribool('b.c.d') is Tribool()
     assert t.contains_as_tribool('c') is Tribool()
+
+
+@pytest.mark.parametrize('rule_cls', [IncludeRule,
+                                      ExcludeRule,
+                                      RecursiveIncludeRule,
+                                      RecursiveExcludeRule])
+def test_rule_repr(rule_cls):
+    assert repr(rule_cls('module')) == "{cls}('module')".format(cls=rule_cls.__name__)
