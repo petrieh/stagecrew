@@ -2,6 +2,7 @@
 
 import operator
 import itertools
+from functools import reduce
 import pytest
 from tribool import Tribool
 from stagecrew.importer import TriboolSet
@@ -14,15 +15,6 @@ __copyright__ = 'Copyright (C) 2020, Nokia'
 TRIBOOL_VALUES = [Tribool(False), Tribool(), Tribool(True)]
 
 TRIBOOL_SQUARE = list(itertools.product(TRIBOOL_VALUES, TRIBOOL_VALUES))
-
-
-@pytest.fixture
-def tribool_square():
-    tribool_values = [Tribool(False), Tribool(), Tribool(True)]
-    print(tribool_values)
-    ret = itertools.product(tribool_values, tribool_values)
-    assert 0, list(ret)
-    return ret
 
 
 @pytest.fixture
@@ -71,12 +63,22 @@ def triboolset_b():
 
 
 def contains_as_tribool_a(obj):
-    return contains_as_tribool_factory(0)(obj)
+    f = contains_as_tribool_factory(0)
+    return f(obj)
 
 
 def contains_as_tribool_b(obj):
     f = contains_as_tribool_factory(1)
     return f(obj)
+
+
+def contains_as_tribool_c(obj):
+    f = contains_as_tribool_factory(0)
+    g = contains_as_tribool_factory(1)
+
+    if f(obj) is Tribool():
+        return Tribool(True)
+    return Tribool(False) if g(obj) is Tribool() else Tribool()
 
 
 def contains_as_tribool_factory(i):
@@ -178,7 +180,7 @@ def test_operator(triboolset_a, triboolset_b):
 
 
 def test_triboolset_repr(set_determined_b_else_a):
-    expected = ['determined_b_else_a']
+    expected = ['Tribool', 'determined_b_else_a']
     expected += ['contains_as_tribool_{}'.format(s) for s in ['a', 'b']]
     actual = repr(set_determined_b_else_a)
     for s in expected:
@@ -198,3 +200,34 @@ def test_triboolset_as_triboolset_arg(triboolset_a):
     for o in TRIBOOL_SQUARE:
         expected = triboolset_a.contains_as_tribool(o)
         assert t.contains_as_tribool(o) is expected
+
+
+@pytest.fixture(params=range(9))
+def sets_for_create(triboolset_a, triboolset_b, request):
+    sets = [[triboolset_a, triboolset_b, contains_as_tribool_c][:i] for i in range(1, 4)]
+    return [s for t in sets for s in itertools.permutations(t)][request.param]
+
+
+@pytest.mark.parametrize('operator', [determined_b_else_a, DeterminedBElseAContains])
+def test_triboolset_create_with_operator(operator, sets_for_create):
+    t = TriboolSet.create_with_operator(operator, *sets_for_create)
+    expected_contains_as_tribool = create_expected_contains_as_tribool(sets_for_create)
+    for o in TRIBOOL_SQUARE:
+        assert t.contains_as_tribool(o) is expected_contains_as_tribool(o), o
+
+
+def create_expected_contains_as_tribool(sets):
+    def get_contains_as_tribool(s):
+        return s._contains_as_tribool if isinstance(s, TriboolSet) else s
+
+    expected_funcs = list(map(get_contains_as_tribool, sets))
+    print(expected_funcs)
+
+    def contains_as_tribool(obj):
+        expected_tribools = [f(obj) for f in expected_funcs]
+        print(expected_tribools)
+        # pylint: disable=arguments-out-of-order
+        return reduce(lambda a, b: determined_b_else_a(b, a),
+                      reversed(expected_tribools))
+
+    return contains_as_tribool

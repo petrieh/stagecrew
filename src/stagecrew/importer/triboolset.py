@@ -1,3 +1,4 @@
+from functools import reduce
 from tribool import Tribool
 import six
 from .contains import (
@@ -75,6 +76,22 @@ class TriboolSet(object):
 
     def copy(self):
         return self._create(self._contains_as_tribool)
+
+    @classmethod
+    def create_with_operator(cls, oper, *triboolsets):
+        """Args:
+            triboolsets: either TriboolSet objects or contains_as_tribool functions
+        """
+        def oper_func(a, b):
+            a_set = cls._create_triboolset_if_needed(a)
+            b_set = cls._create_triboolset_if_needed(b)
+            return a_set.operator(oper, b_set)
+
+        return reduce(oper_func, triboolsets)
+
+    @classmethod
+    def _create_triboolset_if_needed(cls, s):
+        return s if isinstance(s, TriboolSet) else cls(s)
 
     @classmethod
     def _create(cls, contains_as_tribool):

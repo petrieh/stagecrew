@@ -1,4 +1,3 @@
-from functools import reduce
 from tribool import Tribool
 from .triboolset import TriboolSet
 from .contains import (
@@ -10,10 +9,7 @@ __copyright__ = 'Copyright (C) 2020, Nokia'
 
 
 def get_triboolset_from_rules(*rules):
-    def determined_b_else_a(a, b):
-        return a.operator(DeterminedBElseAContains, b)
-
-    return reduce(determined_b_else_a, map(TriboolSet, rules))
+    return TriboolSet.create_with_operator(DeterminedBElseAContains, *rules)
 
 
 class RuleBase(ContainsBase):  # pylint: disable=abstract-method
