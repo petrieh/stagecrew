@@ -218,14 +218,12 @@ def test_triboolset_create_with_operator(operator, sets_for_create):
 
 def create_expected_contains_as_tribool(sets):
     def get_contains_as_tribool(s):
-        return s._contains_as_tribool if isinstance(s, TriboolSet) else s
+        return s.contains_as_tribool if isinstance(s, TriboolSet) else s
 
     expected_funcs = list(map(get_contains_as_tribool, sets))
-    print(expected_funcs)
 
     def contains_as_tribool(obj):
         expected_tribools = [f(obj) for f in expected_funcs]
-        print(expected_tribools)
         # pylint: disable=arguments-out-of-order
         return reduce(lambda a, b: determined_b_else_a(b, a),
                       reversed(expected_tribools))
