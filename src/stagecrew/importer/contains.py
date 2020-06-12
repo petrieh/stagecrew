@@ -58,3 +58,36 @@ class DeterminedBElseAContains(OperandsContainsBase):
     def __call__(self, obj):
         b = self.b.contains_as_tribool(obj)
         return self.a.contains_as_tribool(obj) if b is Tribool() else b
+
+
+@six.add_metaclass(abc.ABCMeta)
+class AllContainsBase(ContainsBase):
+    def __repr__(self):
+        return '{cls}()'.format(cls=self.__class__.__name__)
+
+    def __call__(self, obj):
+        return self._constant_tribool
+
+    @property
+    @abc.abstractmethod
+    def _constant_tribool(self):
+        """Return constant Tribool value for all objects.
+        """
+
+
+class AllTrueContains(AllContainsBase):
+    @property
+    def _constant_tribool(self):
+        return Tribool(True)
+
+
+class AllIndeterminateContains(AllContainsBase):
+    @property
+    def _constant_tribool(self):
+        return Tribool()
+
+
+class AllFalseContains(AllContainsBase):
+    @property
+    def _constant_tribool(self):
+        return Tribool(False)
