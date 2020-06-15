@@ -5,8 +5,9 @@ import itertools
 from functools import reduce
 import pytest
 from tribool import Tribool
-from stagecrew.importer import TriboolSet
-from stagecrew.importer.contains import DeterminedBElseAContains
+from stagecrew.datatypes.triboolset import (
+    TriboolSet,
+    DeterminedBElseAContains)
 
 
 __copyright__ = 'Copyright (C) 2020, Nokia'

@@ -1,6 +1,6 @@
 from tribool import Tribool
-from .triboolset import TriboolSet
-from .contains import (
+from stagecrew.datatypes.triboolset import (
+    TriboolSet,
     DeterminedBElseAContains,
     ContainsBase)
 

@@ -1,5 +1,5 @@
 from tribool import Tribool
-from stagecrew.importer.contains import (
+from stagecrew.datatypes.triboolset import (
     AllFalseContains,
     AllIndeterminateContains,
     AllTrueContains)
