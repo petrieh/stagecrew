@@ -28,6 +28,11 @@ def test_get_triboolset_from_rules():
     assert t.contains_as_tribool('c.a.d') is Tribool()
 
 
+def test_get_triboolset_from_empty_rules():
+    t = get_triboolset_from_rules()
+    assert t.contains_as_tribool('any-module') is Tribool()
+
+
 @pytest.mark.parametrize('rule_cls', [IncludeRule,
                                       ExcludeRule,
                                       RecursiveIncludeRule,

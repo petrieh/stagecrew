@@ -5,14 +5,17 @@ from tribool import Tribool
 from stagecrew.datatypes.triboolset import (
     TriboolSet,
     DeterminedBElseAContains,
-    ContainsBase)
+    ContainsBase,
+    AllIndeterminateContains)
 
 
 __copyright__ = 'Copyright (C) 2020, Nokia'
 
 
 def get_triboolset_from_rules(*rules):
-    return TriboolSet.create_with_operator(DeterminedBElseAContains, *rules)
+    return (TriboolSet.create_with_operator(DeterminedBElseAContains, *rules)
+            if rules else
+            TriboolSet(AllIndeterminateContains()))
 
 
 @six.add_metaclass(abc.ABCMeta)
