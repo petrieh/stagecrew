@@ -14,15 +14,18 @@ def test_get_triboolset_from_rules():
                                   ExcludeRule('a.b.c'),
                                   IncludeRule('b.c'),
                                   IncludeRule('ab.c'))
-    print(t)
     assert t.contains_as_tribool('a') is Tribool(False)
+    assert t.contains_as_tribool('ab') is Tribool()
     assert t.contains_as_tribool('a.b') is Tribool(True)
+    assert t.contains_as_tribool('a.bd') is Tribool(False)
     assert t.contains_as_tribool('a.b.d') is Tribool(True)
     assert t.contains_as_tribool('a.b.c') is Tribool(False)
     assert t.contains_as_tribool('a.b.c.d') is Tribool(True)
     assert t.contains_as_tribool('b.c') is Tribool(True)
+    assert t.contains_as_tribool('b.cd') is Tribool()
     assert t.contains_as_tribool('b.c.d') is Tribool()
     assert t.contains_as_tribool('c') is Tribool()
+    assert t.contains_as_tribool('c.a.d') is Tribool()
 
 
 @pytest.mark.parametrize('rule_cls', [IncludeRule,
