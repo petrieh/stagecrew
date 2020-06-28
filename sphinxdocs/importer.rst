@@ -99,6 +99,67 @@ string.  The reasoning for limited support is that we need to support at least
 importing stdlib dictionary content (e.g. in json format). There could be
 as well *is_data* method, which checks whether the identifier is registered.
 
+Importer requirements
+---------------------
+
+Importer is meant to package modules in Python system A to be extracted in
+Python system B. The reasons for the transfer are the following:
+
+    - make types defined in A picklable in B and vice versa
+    - execute the code defined in A in B
+
+Now, in ideal case this is easy if A and B are similar enough. However, this
+becomes tricky when the systems A and B differ from each other.
+
+There are two types of differences: system and module level. The system level
+differences are typically differences in OS, Python version, software
+libraries and tools. Module differences are always only differences in available
+Python modules.
+
+In this reason there is a need to provide interface for adding global
+requirements (for both A and B). The requirements are added only to some of the
+modules which cannot be imported in all types of the systems or requires
+external Python modules.  These requirements are called system and module
+requirements respectively. This is conceptually similar to setuptools
+conditional install_requires requirements where conditionals are defined
+programmatically e.g. by checking OS version etc.  In setuptools, there is also
+PEP-508 style dependency logic which provides system requirement conditional
+install for the module.  However, in our case these requirement types are
+independent from each other.  Moreover, we are not going to follow fixed system
+requirement markers but provide only programmatic conditional interface. In
+practice we provide API taking callable argument for the system or module
+requirement check.
+
+Moreover, in some cases, if systems A and B are known to be very similar, it is
+not useful to register and package modules which are in both systems. For this
+reason, it is good to define API for excluding single module or recursively
+exclude modules. There are two types of recursive exclusion of the modules:
+
+  - depended recursively exclude - all depended modules are excluded.
+  - sub-module recursively exclude - the module and all sub-modules are
+    excluded.
+
+Importer should be able to gather information about which modules it has
+received together with information which requirements the modules satisfy. In
+this fashion, if this data is shared between systems, the importer can then
+tailor packages according to the real needs of the other system.
+
+If the module does not satisfy system requirements it is not imported. However,
+the code of it (if available) can be associated to it so that the module can be
+added to the package.  This of cause requires that the associated package path
+is correctly set so that the source module can be searched from the path
+directory. In practice in the registration phase the modules not satisfying
+requirements are registered as source (which can be found from the package
+path) and replaced (by importer protocol, sys.meta_path modifications).
+
+There should also be an API for defining module, source file path pairs so that
+modules which do not satisfy the requirements in A can still be packaged in A
+and send to the system B. The use case here is that sometimes the test code is
+very specific to the target system (B) and it is not meaningful or even
+possible to import the modules in the test execution host (A) but only in the
+target (B).
+
+
 .. _`issue-13`: https://github.com/petrieh/crl-interactivesessions/tree/issue-13
 .. _`python imports`: https://blog.ffledgling.com/python-imports-i.html
 .. _`importer protocol`: https://www.python.org/dev/peps/pep-0302/#specification-part-1-the-importer-protocol
