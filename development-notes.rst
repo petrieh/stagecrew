@@ -21,6 +21,12 @@ The configuration may contain for example:
 Module rules optimization
 -------------------------
 
+.. note::
+
+  This feature does not optimize essentially the import process. Instead,
+  it would be better to use cache.
+
+
 Module rules can be optimized via first grouping consecutive Include,
 RecursiveInclude, Exclude and RecursiveExclude rules into a single rule. For
 that purpose we create a module rule tree. Nodes are module path parts (like in
@@ -104,3 +110,18 @@ changed.
 It would be useful to monkeypatch during registration the sys.modules to
 return only excluded modules (like standard libraries). The __setitem__ could
 be overridden to void.
+
+Requirements notes
+------------------
+
+Importer shall raise *ImportError* in case requirements are not met. Import
+process is used in two different scenarios:
+
+   1. Creation of the package
+   2. Extracting of the package
+
+There is no need in 1. for successful import in case there are other means to
+to get the source code of the module. Therefore, there shall be handling for
+*ImportError* in packaging case in order to we can use the same importer in both
+cases. The other option is to use differently configured importers. In the case
+2. *ImnportError* shall not be handled if requirements are not met.
