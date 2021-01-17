@@ -125,3 +125,27 @@ to get the source code of the module. Therefore, there shall be handling for
 *ImportError* in packaging case in order to we can use the same importer in both
 cases. The other option is to use differently configured importers. In the case
 2. *ImnportError* shall not be handled if requirements are not met.
+
+
+Packaging and import process
+----------------------------
+
+It would possibly be more straight forward to use packaging requirements only
+to describe which packages and modules are to packaged. This problem of
+packaging can be divided into two:
+
+  1. Packaging for exec package
+  2. Packaging on need bases
+
+The first one is to be used before the framework is imported. The second one is
+to be used when the actor system is up and running.
+
+The idea is that the first one should contain enough code for enabling actor
+system.
+
+In the importer we can then just add this importer to the front of all
+importers in the meta path. We just import the module if it is in the package,
+otherwise, we trust that the package or module is in the system.
+
+The main difference treating 1 and 2 is that in the second case we get modules
+from importer actor in case it is not in the cache.
